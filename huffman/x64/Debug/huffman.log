@@ -1,0 +1,17 @@
+﻿  huffman.cpp
+C:\studia\aisd\huffman\huffman\huffman.cpp(89,21): error C2971: 'std::bitset': template parameter '_Bits': 'elementBitSize': a variable with non-static storage duration cannot be used as a non-type argument
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\bitset(23,7):
+  see declaration of 'std::bitset'
+  C:\studia\aisd\huffman\huffman\huffman.cpp(88,19):
+  see declaration of 'elementBitSize'
+  
+C:\studia\aisd\huffman\huffman\huffman.cpp(89,45): error C2440: 'initializing': cannot convert from 'initializer list' to 'std::bitset<0>'
+  C:\studia\aisd\huffman\huffman\huffman.cpp(89,45):
+  'std::bitset<0>::bitset': function does not take 3 arguments
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\bitset(167,5):
+  	could be 'std::bitset<0>::bitset(const _Elem *,basic_string<_Elem,std::char_traits<_Elem>,std::allocator<_Other>>::size_type,_Elem,_Elem)'
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\bitset(150,5):
+  	or       'std::bitset<0>::bitset(const std::basic_string<_Elem,_Traits,_Alloc> &,basic_string<_Elem,_Traits,_Alloc>::size_type,basic_string<_Elem,_Traits,_Alloc>::size_type,_Elem,_Elem)'
+  	C:\studia\aisd\huffman\huffman\huffman.cpp(89,45):
+  	while trying to match the argument list '(unsigned char *, unsigned char, const int)'
+  
