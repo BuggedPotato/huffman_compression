@@ -1,17 +1,5 @@
 #include "BitReading.h"
 
-const BitReading::BitPosition POSITIONS[8] = {
-		BitReading::ZERO,
-		BitReading::ONE,
-		BitReading::TWO,
-		BitReading::THREE,
-		BitReading::FOUR,
-		BitReading::FIVE,
-		BitReading::SIX,
-		BitReading::SEVEN
-};
-
-
 bool* BitReading::getBits(unsigned char value){
 	bool *res = new bool[8];
 	for( int i = 0; i < 8; i++ )
