@@ -13,5 +13,6 @@ namespace BitReading {
 		};
 	}
 
-	inline bool getBit( unsigned char position, unsigned char value );
+	bool* getBits(unsigned char value);
+	bool getBit( unsigned char position, unsigned char value );
 }

@@ -1,8 +1,9 @@
 #include "huffman.h"
 #include "TreeNode.h"
-#include<bitset>
+#include "BitReading.h"
 #include<iostream>
 #include<fstream>
+#include<cstring>
 #include<algorithm>
 
 #define BYTE_SIZE 8
@@ -34,10 +35,12 @@ TreeNode *HuffmanCompression::buildHuffmanTree( std::vector<TreeNode*> &initArr 
         initArr.pop_back();
         TreeNode* n2 = initArr.back();
         initArr.pop_back();
+
         TreeNode *newNode = new TreeNode {};
         newNode->probability = n1->probability + n2->probability;
         newNode->left = n1;
         newNode->right = n2;
+
         initArr.emplace_back( newNode );
     }
     return initArr.at( 0 );
@@ -49,46 +52,51 @@ TreeNode *HuffmanCompression::readTreeFromFile( std::string fileName ) {
         return nullptr;
     }
     std::vector<unsigned char> buffer( std::istreambuf_iterator<char>( file ), {} );
-    __int32 treeSize;
-    std::memcpy( &treeSize, buffer.data(), sizeof( __int32 ) );
-    unsigned char elementSize = buffer.at( 4 );
-    // TODO raw data element bit size
-    // int readByte = 5;
-    // first from left is 0, last is 7
-    // skip first bit assuming first node exists
-    // unsigned char positionInByte = 1;
-    // unsigned char mask = 1 << positionInByte;
+    int32_t treeSize;
+    std::memcpy( &treeSize, buffer.data(), sizeof( int32_t ) );
+    const unsigned char elementSize = buffer.at( 4 );
+    const unsigned char rawElementBitSize = buffer.at(5); //TODO add to docs
 
-    TreeNode *head = nodeFromBytes( elementSize, &( *( buffer.begin() + 4 ) ), &( *buffer.end() ) );
-    
-
+    TreeNode *head = HuffmanCompression::nodeFromBytes( elementSize, &( *( buffer.begin() + 5 ) ), &( *buffer.end() ) );
     file.close();
-    return nullptr;
+    return head;
 }
 
-TreeNode *nodeFromBytes( unsigned char &elementSize, unsigned char* start, unsigned char *end ) {
-    static std::bitset<BYTE_SIZE> currentByte { *start };
-    static unsigned char positionInByte = 0;
+TreeNode *HuffmanCompression::nodeFromBytes( unsigned const char &elementSize, unsigned char* start, unsigned char *end ) {
+    static unsigned char currentByte = *start;
+    static unsigned char positionInByte = 7;
 
-    if ( positionInByte > 7 ) {
+    if ( positionInByte < 0 ) {
         start++;
         if ( start >= end )
             return nullptr;
-        positionInByte = 0;
+        positionInByte = 7;
         currentByte = { *start };
     }
 
     TreeNode *node = new TreeNode {};
-    if ( currentByte[positionInByte] ) {
-        node->left = nodeFromBytes( ++positionInByte, start, end );
-        node->right = nodeFromBytes( ++positionInByte, start, end );
+    if ( BitReading::getBit(positionInByte, currentByte) ) {
+        positionInByte--;
+        node->left = nodeFromBytes( elementSize, start, end );
+        node->right = nodeFromBytes( elementSize, start, end );
     }
     else {
-        positionInByte++;
-        const int elementBitSize = elementSize * BYTE_SIZE;
-        std::bitset<elementBitSize> element ( start, positionInByte, elementBitSize );
-        start += elementSize;
-        node->sequence = element.to_string();
+        std::string elementParts[elementSize];
+        // read sequence characters bit by bit
+        for( int i = 0; i < elementSize * 8; i++ ){
+            positionInByte--;
+            if ( positionInByte < 0 ) {
+                start++;
+                if ( start >= end )
+                    return nullptr;
+                positionInByte = 7;
+                currentByte = { *start };
+            }
+            elementParts[i/8] += std::to_string(BitReading::getBit( positionInByte, currentByte ));
+        }
+
+        for( int i = 0; i < elementSize; i++ )
+            node->sequence += elementParts[i];
     }
     return node;
 }
