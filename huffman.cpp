@@ -18,7 +18,7 @@ void addTreeFileData( TreeNode* head, std::vector<unsigned char> &buffer );
 void addTextData(std::vector<std::string> &text, const int &sequenceSize, TreeNode* tree, std::vector<unsigned char> &data);
 unsigned char getSequenceLength(TreeNode* head);
 void getSequenceCodes( TreeNode* tree, std::vector<std::string> &sequences, std::vector<std::vector<bool>> &codes );
-void getTreeByteSizeRec(int32_t &size, int &bitCounter, TreeNode* head);
+void getTreeByteSizeRec( TreeNode* head);
 int32_t getTreeByteSize(TreeNode* head, std::vector<unsigned char> &data);
 
 std::vector<TreeNode*> HuffmanCompression::getInitArray( std::vector<std::string> &letters, std::vector<double> &values, int wordLength ){
@@ -66,8 +66,13 @@ void addTreeFileData( TreeNode* head, std::vector<unsigned char> &buffer ) {
         int32_t number;
         unsigned char bytes[4];
     } treeSize;
+
     std::vector<unsigned char> rawTreeData;
     treeSize.number = getTreeByteSize( head, rawTreeData );
+    std::cout << "treeSize: " << treeSize.number << std::endl;
+    for(int i = 0; i < 4; i++)
+        std::cout << "treeSize[" << i << "]: " << int(treeSize.bytes[i]) << std::endl;
+    std::cout << "element: " << int(elementSize) << std::endl;
 
     for(int i = 0; i < 4; i++)
         buffer.push_back( treeSize.bytes[i] );
@@ -165,6 +170,14 @@ void addTextData(std::vector<std::string> &text, const int &sequenceSize, TreeNo
     std::vector<std::vector<bool>> codes;
     getSequenceCodes( tree, sequences, codes );
 
+    std::cout << std::endl;
+    for( int i = 0; i < sequences.size(); i++ ){
+        std::cout << sequences.at(i) << ": ";
+        for( bool foo : codes.at(i) )
+            std::cout << foo;
+        std::cout << std::endl;
+    }
+
     unsigned char currentByte = 0;
     int positionInByte = 8;
 
@@ -206,7 +219,7 @@ void getSequenceCodes( TreeNode* tree, std::vector<std::string> &sequences, std:
     if( !tree->sequence.empty() ){
         sequences.push_back(tree->sequence);
         codes.push_back(code);
-        code.clear();
+        code.pop_back();
     }
     else{
         if( tree->left ){
@@ -222,7 +235,7 @@ void getSequenceCodes( TreeNode* tree, std::vector<std::string> &sequences, std:
 
 
 // returns leftover byte after finishing
-unsigned char getTreeByteSizeRec(int32_t &size, /*int &bitCounter,*/ std::vector<unsigned char> &data, TreeNode* head){
+unsigned char getTreeByteSizeRec( std::vector<unsigned char> &data, TreeNode* head){
     static unsigned char currentByte = 0;
     static int positionInByte = 8;
 
@@ -233,17 +246,24 @@ unsigned char getTreeByteSizeRec(int32_t &size, /*int &bitCounter,*/ std::vector
         currentByte = 0;
         positionInByte = 7;
     }
-
+    // std::cout << "pre OR" << std::endl;
     if( head->sequence.empty() ){
         if(head->left){
             currentByte |= BitReading::POSITIONS[positionInByte];
-            getTreeByteSizeRec(size, /*bitCounter,*/ data, head->left);
-            positionInByte--;
+            getTreeByteSizeRec( data, head->left);
+            // positionInByte--;
+            // if ( positionInByte < 0 ) {
+            //     data.push_back(currentByte);
+            //     currentByte = 0;
+            //     positionInByte = 7;
+            // }
         }
         if(head->right){
-            currentByte |= BitReading::POSITIONS[positionInByte];
-            getTreeByteSizeRec(size, /*bitCounter,*/ data, head->right);
+            // currentByte |= BitReading::POSITIONS[positionInByte];
+            getTreeByteSizeRec( data, head->right);
         }
+        // std::cout << "post OR" << std::endl;
+        // return 0;
     }
     else{
         int elementSize = head->sequence.length();
@@ -260,22 +280,34 @@ unsigned char getTreeByteSizeRec(int32_t &size, /*int &bitCounter,*/ std::vector
                     currentByte |= BitReading::POSITIONS[positionInByte];
             }
         }
-        return currentByte;
+        // std::cout << "post OR" << std::endl;
+        std::cout << "last byte: " << int(currentByte) << std::endl;
     }
+    // TODO leftover == zero is ignored
+    return currentByte;
 }
 
 int32_t getTreeByteSize(TreeNode* head, std::vector<unsigned char> &data){
-    // int bitCounter = 0;
     int32_t size = 0;
-    unsigned char leftover = getTreeByteSizeRec(size, /*bitCounter,*/ data, head);
+    unsigned char leftover = getTreeByteSizeRec( data, head);
+    std::cout << "leftover: " << int(leftover) << std::endl;
     if (leftover)
         data.push_back(leftover);
-    // size += std::ceil(bitCounter / 8.);
     size += data.size();
     size += 5; // 4 for tree size and 1 for element size
     return size;
 }
 
+
+void HuffmanCompression::printTree( TreeNode* head ){
+    if( !head->sequence.empty() ){
+        std::cout << head->sequence << std::endl;
+        return;
+    }
+    std::cout << "NODE" << std::endl;
+    printTree(head->left);
+    printTree(head->right);
+}
 
 void HuffmanCompression::destroyTree( TreeNode *&head ) {
     // always has two children

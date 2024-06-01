@@ -13,5 +13,6 @@ namespace HuffmanCompression {
     // unsigned char getSequenceLength(TreeNode* head);
     // int32_t getTreeByteSize(TreeNode* head);
 
+    void printTree( TreeNode* head );
     void destroyTree( TreeNode* &head );
 }
