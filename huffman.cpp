@@ -75,10 +75,6 @@ void addTreeFileData( TreeNode* head, std::vector<std::string> &text, std::vecto
     std::vector<unsigned char> rawTreeData;
     BInt32 treeSize;
     treeSize.number = getTreeByteSize( head, rawTreeData );
-    // std::cout << "treeSize: " << treeSize.number << std::endl;
-    // for(int i = 0; i < 4; i++)
-        // std::cout << "treeSize[" << i << "]: " << int(treeSize.bytes[i]) << std::endl;
-    // std::cout << "element: " << int(elementSize) << std::endl;
 
     for(int i = 0; i < 4; i++)
         buffer.push_back( treeSize.bytes[i] );
@@ -96,7 +92,7 @@ void addTreeFileData( TreeNode* head, std::vector<std::string> &text, std::vecto
         buffer.push_back(elementCount.bytes[i]);
 }
 
-bool HuffmanCompression::compressToFile( TreeNode* tree, std::vector<std::string> text, std::string fileName ) {
+bool HuffmanCompression::compressToFile( TreeNode* tree, std::vector<std::string> &text, std::string fileName ) {
     std::ofstream file( fileName, std::ios::binary );
     if ( !file.is_open() ) {
         std::cerr << "Could not open file '" << fileName << "'" << std::endl;
@@ -108,7 +104,7 @@ bool HuffmanCompression::compressToFile( TreeNode* tree, std::vector<std::string
     addTreeFileData(tree, text, data);
     addTextData( text, sequenceLength, tree, data );
 
-    file.write((char *)data.data(), data.size() /** sizeof(unsigned char)*/);
+    file.write((char *)data.data(), data.size());
     file.close();
     return true;
 }
@@ -118,22 +114,19 @@ bool HuffmanCompression::decompressFile( std::string fileName, std::vector<std::
     if ( !file.is_open() ) {
         return false;
     }
-    // std::cout << "\nDECOMPRESSION\n" << std::endl;
-    // std::cout << "start" << std::endl;
     std::vector<unsigned char> data( std::istreambuf_iterator<char>( file ), {} );
     file.close();
 
     int newBegin = 0;
     TreeNode* tree = readTree( data, newBegin );
-    // std::cout << "after tree" << std::endl;
+
     int32_t elementCount = 0;
     std::memcpy( &elementCount, data.data() + newBegin, sizeof(elementCount) );
     newBegin += sizeof(elementCount);
 
-    // printTree(tree);
-    // std::cout << "elementCount: " << elementCount << std::endl;
-
-    return readText( tree, elementCount, data.data() + newBegin, text );
+    bool res = readText( tree, elementCount, data.data() + newBegin, text );
+    destroyTree(tree);
+    return res;
 }
 
 bool readText( TreeNode* tree, int elementCount, unsigned char* start, std::vector<std::string> &text ){
@@ -161,11 +154,9 @@ bool readText( TreeNode* tree, int elementCount, unsigned char* start, std::vect
 
             if( !BitReading::getBit( positionInByte, currentByte ) ){
                 head = head->left;
-                // std::cout << "0";
             }
             else{
                 head = head->right;
-                // std::cout << "1";
             }
         }
     }
@@ -246,14 +237,6 @@ void addTextData(std::vector<std::string> &text, const int &sequenceSize, TreeNo
     std::vector<std::string> sequences;
     std::vector<std::vector<bool>> codes;
     getSequenceCodes( tree, sequences, codes );
-
-    // std::cout << std::endl;
-    // for( int i = 0; i < sequences.size(); i++ ){
-    //     std::cout << sequences.at(i) << ": ";
-    //     for( bool foo : codes.at(i) )
-    //         std::cout << foo;
-    //     std::cout << std::endl;
-    // }
 
     unsigned char currentByte = 0;
     int positionInByte = 8;

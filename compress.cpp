@@ -28,17 +28,10 @@ int main( int argc, char* argv[]) {
         sequenceLength = std::stoi(argv[2]);
 
     std::vector<TreeNode*> initArr = HuffmanCompression::getInitArray( letters, values, sequenceLength );
-    // for( TreeNode* node : initArr )
-    //     std::cout << node->sequence << ": " << node->probability << std::endl;
-    std::cout << letters.size() << std::endl;
-    std::cout << initArr.size() << std::endl;
 
     TreeNode *tree = HuffmanCompression::buildHuffmanTree( initArr );
     std::cout << "Compression tree built successfully." << std::endl;
 
-    // HuffmanCompression::printTree(tree);
-
-    // WRITE
     std::vector<std::string> text;
     std::ifstream inputFile( inputFileName );
     if ( inputFile.is_open() ) {
@@ -48,7 +41,16 @@ int main( int argc, char* argv[]) {
         }
         inputFile.close();
 
-        if( HuffmanCompression::compressToFile( tree, text, "output/output.bin" ) )
+        std::string outputFileName = inputFileName;
+        int dotPos = inputFileName.find('.');
+        int separatorPos = inputFileName.find_last_of( '/' );
+        if( dotPos != std::string::npos )
+            outputFileName = outputFileName.substr(0, dotPos);
+        if( separatorPos != std::string::npos )
+            outputFileName = outputFileName.substr( separatorPos );
+        outputFileName += "-compressed.bin";
+
+        if( HuffmanCompression::compressToFile( tree, text, "output/" + outputFileName ) )
             std::cout << "Successfully compressed into 'output.bin'" << std::endl;
         else
             std::cerr << "Compression failed" << std::endl;
@@ -59,12 +61,6 @@ int main( int argc, char* argv[]) {
         return 1;
     }
     HuffmanCompression::destroyTree( tree );
-
-    // READ
-    std::vector<std::string> readText;
-    HuffmanCompression::decompressFile( "output/output.bin", readText );
-    for( std::string line : readText )
-        std::cout << line;
 
     return 0;
 }
