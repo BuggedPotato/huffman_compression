@@ -8,5 +8,5 @@ bool* BitReading::getBits(unsigned char value){
 }
 
 bool BitReading::getBit( unsigned char position, unsigned char value ) {
-	return ( value & POSITIONS[position] ) != 0;
+	return ( value & POSITIONS[position] );
 }

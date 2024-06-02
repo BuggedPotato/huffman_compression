@@ -8,7 +8,7 @@ int main( int argc, char* argv[]) {
     std::cout << "Initializing..." << std::endl;
     std::vector<std::string> letters;
     std::vector<double> values;
-    for( int i = 65; i < 69; i++ ){
+    for( int i = 65; i < FREQUENCY_SIZE; i++ ){
         if( CHAR_FREQUENCY[i] == 0 )
             continue;
         letters.push_back( std::string(1, char(i)) );
@@ -38,6 +38,7 @@ int main( int argc, char* argv[]) {
 
     HuffmanCompression::printTree(tree);
 
+    // WRITE
     std::vector<std::string> text;
     std::ifstream inputFile( inputFileName );
     if ( inputFile.is_open() ) {
@@ -59,5 +60,13 @@ int main( int argc, char* argv[]) {
     }
 
     HuffmanCompression::destroyTree( tree );
+
+
+    // READ
+    std::vector<std::string> readText;
+    HuffmanCompression::decompressFile( "output.bin", readText );
+    for( std::string line : readText )
+        std::cout << line << std::endl;
+
     return 0;
 }

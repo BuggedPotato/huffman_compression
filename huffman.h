@@ -7,11 +7,7 @@ namespace HuffmanCompression {
     TreeNode* buildHuffmanTree( std::vector<TreeNode*> &initArr );
     
     bool compressToFile( TreeNode* tree, std::vector<std::string> text, std::string fileName );
-    TreeNode *readTreeFromFile( std::string fileName );
-    // TreeNode *nodeFromBytes( unsigned const char &elementSize, unsigned char* start, unsigned char *end );
-
-    // unsigned char getSequenceLength(TreeNode* head);
-    // int32_t getTreeByteSize(TreeNode* head);
+    bool decompressFile( std::string fileName, std::vector<std::string> &text );
 
     void printTree( TreeNode* head );
     void destroyTree( TreeNode* &head );
