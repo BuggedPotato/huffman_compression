@@ -8,7 +8,7 @@ int main( int argc, char* argv[]) {
     std::cout << "Initializing..." << std::endl;
     std::vector<std::string> letters;
     std::vector<double> values;
-    for( int i = 65; i < FREQUENCY_SIZE; i++ ){
+    for( int i = 0; i < FREQUENCY_SIZE; i++ ){
         if( CHAR_FREQUENCY[i] == 0 )
             continue;
         letters.push_back( std::string(1, char(i)) );
@@ -28,15 +28,15 @@ int main( int argc, char* argv[]) {
         sequenceLength = std::stoi(argv[2]);
 
     std::vector<TreeNode*> initArr = HuffmanCompression::getInitArray( letters, values, sequenceLength );
-    for( TreeNode* node : initArr )
-        std::cout << node->sequence << ": " << node->probability << std::endl;
+    // for( TreeNode* node : initArr )
+    //     std::cout << node->sequence << ": " << node->probability << std::endl;
     std::cout << letters.size() << std::endl;
     std::cout << initArr.size() << std::endl;
 
     TreeNode *tree = HuffmanCompression::buildHuffmanTree( initArr );
     std::cout << "Compression tree built successfully." << std::endl;
 
-    HuffmanCompression::printTree(tree);
+    // HuffmanCompression::printTree(tree);
 
     // WRITE
     std::vector<std::string> text;
@@ -44,11 +44,11 @@ int main( int argc, char* argv[]) {
     if ( inputFile.is_open() ) {
         std::string line;
         while(std::getline(inputFile, line)){
-            text.push_back(line);
+            text.push_back(line + char(10)); // adds newline
         }
         inputFile.close();
 
-        if( HuffmanCompression::compressToFile( tree, text, "output.bin" ) )
+        if( HuffmanCompression::compressToFile( tree, text, "output/output.bin" ) )
             std::cout << "Successfully compressed into 'output.bin'" << std::endl;
         else
             std::cerr << "Compression failed" << std::endl;
@@ -58,15 +58,13 @@ int main( int argc, char* argv[]) {
         HuffmanCompression::destroyTree( tree );
         return 1;
     }
-
     HuffmanCompression::destroyTree( tree );
-
 
     // READ
     std::vector<std::string> readText;
-    HuffmanCompression::decompressFile( "output.bin", readText );
+    HuffmanCompression::decompressFile( "output/output.bin", readText );
     for( std::string line : readText )
-        std::cout << line << std::endl;
+        std::cout << line;
 
     return 0;
 }

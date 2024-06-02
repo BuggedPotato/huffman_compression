@@ -8,5 +8,6 @@
 	- create a leaf
 	- read elementSize bytes and save to leaf
 	- attach leaf to parent
-
+## elementCount (4B)
+number of raw saved elements
 ## raw data to decode

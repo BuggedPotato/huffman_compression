@@ -1,13 +1,9 @@
-res = [0] * 128
-with open("ascii_freq.txt", "r") as file:
+lines = []
+with open("input/bee-movie.txt", "r") as file:
     for line in file:
-        tmp = line.split(":")
-        el = (int(tmp[0]), float(tmp[1]))
-        res[el[0]] = el[1]
+        if chr(35) in line:
+            line = line.replace( chr(35), '' )
+        lines.append(line)
 
-with open("ascii_freq_ARRAY.txt", "w") as file:
-    file.write("{\n")
-    for v in res:
-        file.write(str(v))
-        file.write(",\n")
-    file.write("}")
+with open("input/bee-movie-cleaned.txt", "w") as file:
+    file.writelines(lines)
