@@ -49,9 +49,10 @@ int main( int argc, char* argv[]) {
         if( separatorPos != std::string::npos )
             outputFileName = outputFileName.substr( separatorPos );
         outputFileName += "-compressed.bin";
+        outputFileName = "output/" + outputFileName;
 
-        if( HuffmanCompression::compressToFile( tree, text, "output/" + outputFileName ) )
-            std::cout << "Successfully compressed into 'output.bin'" << std::endl;
+        if( HuffmanCompression::compressToFile( tree, text, outputFileName ) )
+            std::cout << "Successfully compressed into '" + outputFileName + "'" << std::endl;
         else
             std::cerr << "Compression failed" << std::endl;
     }
