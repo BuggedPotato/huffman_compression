@@ -42,7 +42,7 @@ int main( int argc, char* argv[]) {
         inputFile.close();
 
         std::string outputFileName = inputFileName;
-        int dotPos = inputFileName.find('.');
+        int dotPos = inputFileName.find_last_of('.');
         int separatorPos = inputFileName.find_last_of( '/' );
         if( dotPos != std::string::npos )
             outputFileName = outputFileName.substr(0, dotPos);

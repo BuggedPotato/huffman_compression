@@ -20,7 +20,7 @@ int main( int argc, char* argv[]) {
     std::cout << "Decompressed successfully" << std::endl;
 
     std::string outputFileName = inputFileName;
-    int dotPos = inputFileName.find('.');
+    int dotPos = inputFileName.find_last_of('.');
     int separatorPos = inputFileName.find_last_of( '/' );
     if( dotPos != std::string::npos )
         outputFileName = outputFileName.substr(0, dotPos);
